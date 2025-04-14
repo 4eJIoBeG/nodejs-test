@@ -39,55 +39,67 @@ API предоставляет эндпоинты для создания, об�
 
 1. **Клонируйте репозиторий**:
 
-   `git clone https://github.com/<your-username>/appeal-management-api.git
-cd appeal-management-api`
+```
+git clone https://github.com/4eJIoBeG/nodejs-test.git
+
+cd nodejs-test
+```
 
 2. **Установите зависимости:**
 
-   `npm install`
+```
+npm install
+```
 
 3. **Настройте переменные окружения:**
 
    **_Создайте файл .env в корне проекта и добавьте:_**
 
-   `DB_HOST=localhost  
-DB_PORT=5432  
-DB_NAME=appeal_db  
-DB_USER=ваш_пользователь_бд  
-DB_PASSWORD=ваш_пароль_бд  
-PORT=3000`
+```
+DB_HOST=localhost
+
+DB_PORT=5432
+
+DB_NAME=appeal_db
+
+DB_USER=ваш_пользователь_бд
+
+DB_PASSWORD=ваш_пароль_бд
+
+PORT=3000
+```
 
 4. **Настройте PostgreSQL:**
 
    **_Создайте базу данных и пользователя:_**
 
-   ```
-   sudo -u postgres psql
+```
+sudo -u postgres psql
 
-   CREATE DATABASE appeal_db;
+CREATE DATABASE appeal_db;
 
-   CREATE USER ваш_пользователь_бд WITH PASSWORD 'ваш_пароль_бд';
+CREATE USER 'ваш_пользователь_бд' WITH PASSWORD 'ваш_пароль_бд';
 
-   GRANT ALL PRIVILEGES ON DATABASE appeal_db TO ваш_пользователь_бд;
+GRANT ALL PRIVILEGES ON DATABASE appeal_db TO 'ваш_пользователь_бд';
 
-   GRANT USAGE, CREATE ON SCHEMA public TO ваш*пользователь_бд;
+GRANT USAGE, CREATE ON SCHEMA public TO 'ваш_пользователь_бд';
 
-   ALTER DATABASE appeal_db OWNER TO myuser;
+ALTER DATABASE appeal_db OWNER TO myuser;
 
-   \q
-   ```
+\q
+```
 
 5. **Запустите приложение:**
 
-   **_В режиме разработки:_**
+**_В режиме разработки:_**
 
-   `npm run dev`
+`npm run dev`
 
-   **_В продакшн-режиме:_**
+**_В продакшн-режиме:_**
 
-   `npm run build`
+`npm run build`
 
-   `npm start`
+`npm start`
 
 ## Доступ к API 🌐
 
@@ -98,14 +110,12 @@ PORT=3000`
 
 **API предоставляет следующие эндпоинты (подробности в Swagger UI):**
 
-```
 - **POST** `/api/appeals` – Создать новое обращение
 - **GET** `/api/appeals` – Получить обращения (поддержка фильтрации по `date`, `startDate`, `endDate`)
 - **PUT** `/api/appeals/:id/start` – Начать обработку обращения
 - **PUT** `/api/appeals/:id/complete` – Завершить обращение
 - **PUT** `/api/appeals/:id/cancel` – Отменить обращение
 - **PUT** `/api/appeals/cancel-all-in-progress` – Отменить все обращения в процессе
-```
 
 🔍 Примеры запросов
 
