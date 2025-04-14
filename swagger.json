@@ -1,0 +1,341 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "Appeal Management API",
+		"version": "1.0.0",
+		"description": "API для управления анонимными обращениями"
+	},
+	"paths": {
+		"/api/appeals": {
+			"post": {
+				"summary": "Создать новое обращение",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["subject", "text"],
+								"properties": {
+									"subject": {
+										"type": "string",
+										"description": "Тема обращения"
+									},
+									"text": {
+										"type": "string",
+										"description": "Текст обращения"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Обращение успешно создано",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Appeal"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Отсутствуют обязательные поля"
+					},
+					"500": {
+						"description": "Внутренняя ошибка сервера"
+					}
+				}
+			},
+			"get": {
+				"summary": "Получить список обращений",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "date",
+						"schema": {
+							"type": "string",
+							"format": "date"
+						},
+						"description": "Фильтр по конкретной дате в формате YYYY-MM-DD"
+					},
+					{
+						"in": "query",
+						"name": "startDate",
+						"schema": {
+							"type": "string",
+							"format": "date"
+						},
+						"description": "Начало диапазона дат"
+					},
+					{
+						"in": "query",
+						"name": "endDate",
+						"schema": {
+							"type": "string",
+							"format": "date"
+						},
+						"description": "Конец диапазона дат"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Список обращений",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Appeal"
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Внутренняя ошибка сервера"
+					}
+				}
+			}
+		},
+		"/api/appeals/{id}/start": {
+			"put": {
+				"summary": "Взять обращение в работу",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID обращения"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Обращение взято в работу",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Appeal"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Обращение не найдено"
+					},
+					"400": {
+						"description": "Обращение не в статусе \"Новое\""
+					},
+					"500": {
+						"description": "Внутренняя ошибка сервера"
+					}
+				}
+			}
+		},
+		"/api/appeals/{id}/complete": {
+			"put": {
+				"summary": "Завершить обработку обращения",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID обращения"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["resolution"],
+								"properties": {
+									"resolution": {
+										"type": "string",
+										"description": "Текст решения"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Обращение завершено",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Appeal"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Обращение не найдено"
+					},
+					"400": {
+						"description": "Обращение не в статусе \"В работе\" или отсутствует решение"
+					},
+					"500": {
+						"description": "Внутренняя ошибка сервера"
+					}
+				}
+			}
+		},
+		"/api/appeals/{id}/cancel": {
+			"put": {
+				"summary": "Отменить обращение",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						},
+						"description": "ID обращения"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["cancelReason"],
+								"properties": {
+									"cancelReason": {
+										"type": "string",
+										"description": "Причина отмены"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Обращение отменено",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Appeal"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Обращение не найдено"
+					},
+					"400": {
+						"description": "Отсутствует причина отмены"
+					},
+					"500": {
+						"description": "Внутренняя ошибка сервера"
+					}
+				}
+			}
+		},
+		"/api/appeals/cancel-all-in-progress": {
+			"put": {
+				"summary": "Отменить все обращения в статусе \"В работе\"",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["cancelReason"],
+								"properties": {
+									"cancelReason": {
+										"type": "string",
+										"description": "Причина отмены"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Все обращения в работе отменены",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"message": {
+											"type": "string",
+											"description": "Количество отмененных обращений"
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Отсутствует причина отмены"
+					},
+					"500": {
+						"description": "Внутренняя ошибка сервера"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"Appeal": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer"
+					},
+					"subject": {
+						"type": "string"
+					},
+					"text": {
+						"type": "string"
+					},
+					"status": {
+						"type": "string",
+						"enum": ["new", "in_progress", "completed", "cancelled"]
+					},
+					"resolution": {
+						"type": "string",
+						"nullable": true
+					},
+					"cancelReason": {
+						"type": "string",
+						"nullable": true
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"id",
+					"subject",
+					"text",
+					"status",
+					"createdAt",
+					"updatedAt"
+				]
+			}
+		}
+	}
+}
